@@ -1,0 +1,111 @@
+.TH INTERNSTCL 1 "February 2024" "internsctl v0.1.0" "User Commands"
+
+.SH NAME
+internsctl \- Custom Linux command for operations
+
+.SH SYNOPSIS
+.B internsctl
+[\fI COMMAND \fP]
+[\fI OPTIONS \fP]
+
+.SH DESCRIPTION
+.B internsctl
+is a custom Linux command for various operations. It provides commands to get CPU information, memory information, create users, list users, and get information about files.
+
+.SH COMMANDS
+.IP "\fBcpu getinfo\fP"
+Get CPU information.
+
+.IP "\fBmemory getinfo\fP"
+Get memory information.
+
+.IP "\fBuser create\fP"
+Create a new user.
+
+.IP "\fBuser list\fP [\fB--sudo-only\fP]"
+List all regular users or users with sudo permissions.
+
+.IP "\fBfile getinfo\fP \fI[--size | -s | --permissions | -p | --owner | -o | --last-modified | -m] \fP\fIFILE\fP"
+Get information about a file. Optionally, display only specific information using options.
+
+.SH OPTIONS
+.IP "\fB--sudo-only\fP"
+List users with sudo permissions.
+
+.IP "\fB--help\fP"
+Show this help message and exit.
+
+.IP "\fB--version\fP"
+Show version information.
+
+.SH FILE GETINFO OPTIONS
+.IP "\fB--size, -s\fP"
+Print file size.
+
+.IP "\fB--permissions, -p\fP"
+Print file permissions.
+
+.IP "\fB--owner, -o\fP"
+Print file owner.
+
+.IP "\fB--last-modified, -m\fP"
+Print last modified time.
+
+.SH EXAMPLES
+.IP "Obtain the size of the specified file only:"
+.nf
+.B $ internsctl file getinfo --size hello.txt
+5448
+.fi
+
+.IP "Obtain the permissions of the specified file only:"
+.nf
+.B $ internsctl file getinfo --permissions hello.txt
+-rw-r--r--
+.fi
+
+.IP "Obtain the owner of the specified file only:"
+.nf
+.B $ internsctl file getinfo --owner hello.txt
+xenonstack
+.fi
+
+.IP "Obtain the last modified time of the specified file only:"
+.nf
+.B $ internsctl file getinfo --last-modified hello.txt
+2020-10-07 20:34:44.616123431 +0530
+.fi
+
+.SH AUTHOR
+Written by Shivam.
+
+.SH REPORTING BUGS
+Report bugs to help@xenonstack.com
+
+.SH SEE ALSO
+.BR lscpu (1),
+.BR free (1),
+.BR useradd (8),
+.BR passwd (1),
+.BR getent (1),
+.BR stat (1),
+.BR grep (1),
+.BR tr (1).
+
+.SH COPYRIGHT
+Copyright \(co Xenonstack 2024.
+
+.SH LICENSE
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+.SH DISCLAIMER
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+.SH VERSION
+internsctl v0.1.0 (February 2024)

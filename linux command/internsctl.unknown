@@ -1,0 +1,199 @@
+#!/bin/bash
+
+function show_help() {
+    echo "Usage: internsctl [COMMAND] [OPTIONS]"
+    echo "Custom Linux command for operations."
+    echo
+    echo "Commands:"
+    echo "  cpu getinfo       Get CPU information"
+    echo "  memory getinfo    Get memory information"
+    echo "  user create       Create a new user"
+    echo "  user list         List all regular users"
+    echo "  file getinfo      Get information about a file"
+    echo
+    echo "Options:"
+    echo "  --sudo-only       List users with sudo permissions"
+    echo "  --help            Show this help message and exit"
+    echo "  --version         Show version information"
+}
+
+function show_version() {
+    echo "internsctl v0.1.0"
+}
+
+function get_cpu_info() {
+    lscpu
+}
+
+function get_memory_info() {
+    free
+}
+
+function create_user() {
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a username."
+        exit 1
+    fi
+
+    sudo useradd -m "$1"  # Create user with home directory
+    sudo passwd "$1"      # Set password for the new user
+}
+
+function list_users() {
+    getent passwd | grep -E '/home/[^:]*$' | cut -d: -f1
+}
+
+function list_sudo_users() {
+    grep -Po '^sudo.*:\K.*$' /etc/group | tr ',' '\n'
+}
+
+function get_file_info() {
+    if [ -z "$1" ]; then
+        printf "Error: Please provide a file name.\n"
+        exit 1
+    fi
+
+    file="$1"
+    if [ -e "$file" ]; then
+        size_option=false
+        permissions_option=false
+        owner_option=false
+        last_modified_option=false
+
+        # Check for options
+        while [[ "$#" -gt 1 ]]; do
+            case $2 in
+                --size | -s)
+                    size_option=true
+                    ;;
+                --permissions | -p)
+                    permissions_option=true
+                    ;;
+                --owner | -o)
+                    owner_option=true
+                    ;;
+                --last-modified | -m)
+                    last_modified_option=true
+                    ;;
+                *)
+                    echo "Unknown option: $2"
+                    show_help
+                    exit 1
+                    ;;
+            esac
+            shift
+        done
+
+        # Fetch and print requested information
+        if $size_option; then
+            stat -c '%s' "$file"
+        elif $permissions_option; then
+            stat -c '%A' "$file"
+        elif $owner_option; then
+            stat -c '%U' "$file"
+        elif $last_modified_option; then
+            stat -c '%y' "$file"
+        else
+            # If no options specified, print default information
+            printf "File: %s\nAccess: %s\nSize(B): %s\nOwner: %s\nModify: %s\n" \
+                "$(basename "$file")" \
+                "$(stat -c '%A' "$file")" \
+                "$(stat -c '%s' "$file")" \
+                "$(stat -c '%U' "$file")" \
+                "$(stat -c '%y' "$file")"
+        fi
+    else
+        printf "Error: File '%s' not found.\n" "$file"
+        exit 1
+    fi
+}
+
+# Check for options and commands
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        cpu)
+            shift
+            case $1 in
+                getinfo)
+                    get_cpu_info
+                    exit 0
+                    ;;
+                *)
+                    echo "Unknown CPU command: $1"
+                    show_help
+                    exit 1
+                    ;;
+            esac
+            ;;
+        memory)
+            shift
+            case $1 in
+                getinfo)
+                    get_memory_info
+                    exit 0
+                    ;;
+                *)
+                    echo "Unknown memory command: $1"
+                    show_help
+                    exit 1
+                    ;;
+            esac
+            ;;
+        user)
+            shift
+            case $1 in
+                create)
+                    shift
+                    create_user "$1"
+                    exit 0
+                    ;;
+                list)
+                    if [[ "$2" == "--sudo-only" ]]; then
+                        list_sudo_users
+                    else
+                        list_users
+                    fi
+                    exit 0
+                    ;;
+                *)
+                    echo "Unknown user command: $1"
+                    show_help
+                    exit 1
+                    ;;
+            esac
+            ;;
+        file)
+            shift
+            case $1 in
+                getinfo)
+                    shift
+                    get_file_info "$@"
+                    exit 0
+                    ;;
+                *)
+                    echo "Unknown file command: $1"
+                    show_help
+                    exit 1
+                    ;;
+            esac
+            ;;
+        --sudo-only)
+            list_sudo_users
+            exit 0
+            ;;
+        --help)
+            show_help
+            exit 0
+            ;;
+        --version)
+            show_version
+            exit 0
+            ;;
+        *)
+            echo "Unknown option or command: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+    shift
+done
