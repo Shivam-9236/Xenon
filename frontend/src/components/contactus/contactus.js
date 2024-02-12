@@ -1,6 +1,6 @@
 import { React, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { contact, userContact } from "../../services/api";
 
 const Contactus = () => {
   const navigate = useNavigate();
@@ -19,13 +19,12 @@ const Contactus = () => {
       [name]: value,
     });
   };
-  const submitEnquiry = () => {
+  const submitEnquiry = async () => {
     const { firstname, lastname, message, company, mobileNo, email } = user;
     if (email) {
-      axios.post("http://localhost:5000/contactus", user).then((res) => {
-        alert(res.data.message);
-        navigate("/");
-      });
+      const res = await userContact(user);
+      alert(res.data.message);
+      navigate("/");
     } else {
       alert("Empty fields");
     }

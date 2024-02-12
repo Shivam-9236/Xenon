@@ -85,7 +85,10 @@ const Homepage = ({ setLoginUser }) => {
               <a
                 href="#"
                 className="text-sm font-semibold leading-6 text-gray-900"
-                onClick={() => setLoginUser({})}
+                onClick={() => {
+                  setLoginUser({});
+                  sessionStorage.removeItem("user");
+                }}
               >
                 Log out <span aria-hidden="true">&rarr;</span>
               </a>

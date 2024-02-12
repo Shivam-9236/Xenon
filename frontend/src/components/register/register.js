@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./register.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { userRegister } from "../../services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,13 +21,13 @@ const Register = () => {
     });
   };
 
-  const register = () => {
+  const register = async () => {
     const { username, email, password, confirmPassword } = user;
+    console.log(user);
     if (username && email && password && password === confirmPassword) {
-      axios.post("http://localhost:5000/register", user).then((res) => {
-        alert(res.data.message);
-        navigate("/login");
-      });
+      const res = await userRegister(user);
+      alert(res.data.message);
+      navigate("/login");
     } else {
       alert("invlid input");
     }

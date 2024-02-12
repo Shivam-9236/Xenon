@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./login.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { userLogin } from "../../services/api";
 
 const Login = ({ setLoginUser }) => {
   const navigate = useNavigate();
@@ -19,13 +19,12 @@ const Login = ({ setLoginUser }) => {
     });
   };
 
-  const login = () => {
-    axios.post("http://localhost:5000/login", user).then((res) => {
-      alert(res.data.message);
-      setLoginUser(res.data.user);
-      sessionStorage.setItem("user", JSON.stringify(res.data.user));
-      navigate("/");
-    });
+  const login = async () => {
+    const res = await userLogin(user);
+    alert(res.data.message);
+    setLoginUser(res.data.user);
+    sessionStorage.setItem("user", JSON.stringify(res.data.user));
+    navigate("/");
   };
 
   return (
